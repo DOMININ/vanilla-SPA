@@ -1,8 +1,10 @@
-import { default as getHomePage } from './pages/home.js'
+import { default as createHomePage } from './pages/home.js'
+import { default as createVkPage } from './pages/vkPage.js'
 
 const getContent = (hash) => {
   const pages = {
-    home: getHomePage()
+    home: createHomePage(),
+    vkTest: createVkPage()
   }
 
   return pages[hash]
@@ -19,7 +21,7 @@ const setActiveLink = (hash) => {
 const createNavigation = () => {
   let { hash } = location
   if (!hash) {
-    hash = "#home"
+    hash = "#vkTest"
   }
   hash = hash.slice(1)
 
