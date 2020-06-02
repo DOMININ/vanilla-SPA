@@ -87,7 +87,7 @@ a {
 }
 
 .card-button {
-  padding: 3px 39px 12px 12px;
+  padding: 11px 39px 11px 12px;
   display: flex;
   align-items: center;
   background: #dfe3e6;
@@ -99,6 +99,7 @@ a {
   font-size: 13px;
   line-height: 19px;
   outline: none;
+  width: 272px;
 }
 
 .card-button:hover {
@@ -106,17 +107,23 @@ a {
   border: 1px solid #cccccc;
 }
 
-.card-button span {
-  margin-left: 8px;
+.card-button svg {
+  margin-right: 8px;
 }
 
-.card-button:hover span {
+.card-button:hover {
   text-decoration: underline;
 }
 
-.card-block-add {
+.card-block-add,
+.column-block-add {
   padding: 0 12px 12px;
   display: none;
+  background: #dfe3e6;
+}
+
+.column-block-add {
+  padding-top: 12px;
 }
 
 .card-text {

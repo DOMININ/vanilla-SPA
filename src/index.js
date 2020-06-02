@@ -1,5 +1,6 @@
 import { default as createHomePage } from './pages/home.js'
 import { default as createVkPage } from './pages/vkPage.js'
+import { createVkListeners } from './pages/vkListeners.js';
 
 const getContent = (hash) => {
   const pages = {
@@ -29,6 +30,7 @@ const createNavigation = () => {
 
   let contentBlock = document.querySelector('#content')
   contentBlock.innerHTML = getContent(hash)
+  createVkListeners()
 }
 
 createNavigation()
