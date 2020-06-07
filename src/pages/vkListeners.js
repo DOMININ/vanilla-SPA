@@ -1,46 +1,4 @@
 export function createVkListeners() {
-  const cardButtonElement = document.querySelectorAll('[data-cardButton]')
-  const cardFormElement = document.querySelectorAll('[data-cardForm]')
-  const cardCloseFormElement = document.querySelectorAll('[data-close]')
-  const cardButtonAddElement = document.querySelectorAll('[data-cardAdd]')
-  const cardListElement = document.querySelectorAll('[data-cardList]')
-
-  // Создание карточек
-  cardButtonElement.forEach((el, id) => {
-    el.addEventListener('click', () => {
-      el.style.display = 'none'
-      cardFormElement[id].style.display = 'block'
-      cardFormElement[id].querySelector('[data-area]').focus()
-    })
-  })
-
-  cardCloseFormElement.forEach((el, id) => {
-    el.addEventListener('click', () => {
-      cardButtonElement[id].style.display = 'flex'
-      cardFormElement[id].style.display = 'none'
-    })
-  })
-
-  const addNewItem = id => {
-    const textFromArea = cardFormElement[id].querySelector('[data-area]').value
-    if (textFromArea.trim() !== '') {
-      cardListElement[id].insertAdjacentHTML('beforeend',
-        `<li class="card-item">${textFromArea}</li>`)
-      cardFormElement[id].querySelector('[data-area]').value = ''
-      cardButtonElement[id].style.display = 'flex'
-      cardFormElement[id].style.display = 'none'
-    } else {
-      cardFormElement[id].querySelector('[data-area]').value = ''
-    }
-  }
-
-  cardButtonAddElement.forEach((el, id) => {
-    el.addEventListener('click', () => addNewItem(id))
-
-    cardFormElement[id].querySelector('[data-area]').addEventListener('keydown',
-      e => e.key === 'Enter' && addNewItem(id))
-  })
-
   // Создание колонок
   const containerElement = document.querySelector('[data-container]')
   const LAST_OPENED_COLUMN = 2
@@ -48,11 +6,11 @@ export function createVkListeners() {
 
   const newColumnForm = columnIndex => {
     return `
-      <div data-column="1" class="column">
+      <div data-column class="column">
         <div data-columnForm="${columnIndex}" class="column-block-add">
           <input data-columnTitle="true" class="card-text" placeholder="Введите название колонки" />
           <div class="buttons-wrapper">
-            <button data-addColumn="1" class="card-add">Добавить колонку</button>
+            <button data-addColumn="${columnIndex}" class="card-add">Добавить колонку</button>
             <svg data-columnClose="${columnIndex}" class="card-close" width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 6.71875L14.2188 0L15 0.78125L8.28125 7.5L15 14.2188L14.2188 15L7.5 8.28125L0.78125 15L0 14.2188L6.71875 7.5L0 0.78125L0.78125 0L7.5 6.71875Z" fill="#6B808C"/>
             </svg>
@@ -72,7 +30,7 @@ export function createVkListeners() {
     const columnHTML = `
       <h3 class="card-title">${inputTitle}</h3>
       <ul data-cardList="true" class="card-list"></ul>
-      <div class="card-block-add" data-cardForm="1">
+      <div class="card-block-add">
         <textarea data-area="true" class="card-text" placeholder="Введите название карточки"></textarea>
         <div class="buttons-wrapper">
           <button data-cardAdd="true" class="card-add">Добавить карточку</button>
@@ -102,6 +60,16 @@ export function createVkListeners() {
     containerElement.removeChild(containerElement.lastElementChild)
   }
 
+  const addColumn = (target, columnFormElement) => {
+    const columnPosition = target.dataset.newcolumn ?? target.parentNode.dataset.newcolumn
+    const inputTitle = document.querySelectorAll('[data-columnTitle]')[columnPosition]
+
+    if (inputTitle.value.trim()) {
+      addNewColumn(inputTitle.value, columnPosition)
+      columnFormElement[columnPosition].style.display = 'none'
+    }
+  }
+
   containerElement.addEventListener('click', e => {
     const target = e.target
     const columnButtonElement = document.querySelectorAll('[data-newColumn]')
@@ -110,6 +78,17 @@ export function createVkListeners() {
     if (target.dataset.newcolumn || target.parentNode.dataset.newcolumn) {
       columnButtonElement[target.dataset.newcolumn || target.parentNode.dataset.newcolumn].style.display = 'none'
       columnFormElement[target.dataset.newcolumn || target.parentNode.dataset.newcolumn].style.display = 'block'
+
+      const activeInput = document.querySelectorAll('[data-columnTitle]')
+        [target.dataset.newcolumn ?? target.parentNode.dataset.newcolumn]
+      activeInput.focus()
+
+      activeInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          addColumn(target, columnFormElement)
+        }
+      })
+
       createNewColumn()
     }
 
@@ -120,10 +99,13 @@ export function createVkListeners() {
     }
 
     if (target.dataset.addcolumn) {
-      const inputTitle = document.querySelector('[data-columnTitle]').value
       const columnPosition = target.dataset.addcolumn
-      columnFormElement[columnPosition].style.display = 'none'
-      addNewColumn(inputTitle, columnPosition)
+      const inputTitle = document.querySelectorAll('[data-columnTitle]')[columnPosition]
+
+      if (inputTitle.value.trim()) {
+        addNewColumn(inputTitle.value, columnPosition)
+        columnFormElement[columnPosition].style.display = 'none'
+      }
     }
   })
 }
