@@ -170,7 +170,13 @@ a {
 }
 
 .card-close {
+  padding: 2px;
   cursor: pointer;
+  border-radius: 2px;
+}
+
+.card-close:hover {
+  background-color: #cccccc;
 }
 
 .visible {
