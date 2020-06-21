@@ -1,6 +1,6 @@
 export function createVkListeners() {
   const containerElement = document.querySelector('[data-container]')
-  let columnCount = 0
+  let columnCount = 2
 
   const createColumnForm = () => {
     const columnFormHTML = `
@@ -52,7 +52,7 @@ export function createVkListeners() {
     const columnHTML = `
       <div class="column">
         <h3 class="card-title">${columnTitle}</h3>
-        <ul data-cardList="true" class="card-list"></ul>
+        <ul data-cardList="${columnPosition}" class="card-list"></ul>
         <div data-cardForm="${columnPosition}" class="card-block-add">
           <textarea data-area="${columnPosition}" class="card-text" placeholder="Введите название карточки"></textarea>
           <div class="buttons-wrapper">
@@ -92,7 +92,7 @@ export function createVkListeners() {
       }
     })
 
-    textareas.forEach(area => {
+    textareas.forEach((area, index) => {
       if (area.dataset.area === target.dataset.cardopenform) {
         area.focus()
       }
@@ -130,24 +130,35 @@ export function createVkListeners() {
   }
 
   const addCard = target => {
-    const listElement = document.querySelector('[data-cardlist]')
+    const listElement = document.querySelectorAll('[data-cardlist]')
     const textareas = document.querySelectorAll('[data-area]')
 
     const itemElement = document.createElement('li')
     itemElement.setAttribute('class', 'card-item')
 
-    let cardText = ''
-    textareas.forEach(area => {
-      if (area.dataset.area === target.dataset.addcard) {
-        cardText = area.value
+    textareas.forEach((area, index) => {
+      if (area.dataset.area === target.dataset.addcard && area.value.trim() !== '') {
+        itemElement.textContent = area.value
+        listElement[index].insertAdjacentElement('beforeend', itemElement)
+
         area.value = ''
       }
     })
-    itemElement.textContent = cardText
-
-    listElement.insertAdjacentElement('beforeend', itemElement)
 
     changeFormVisibility(target, 'addcard')
+  }
+
+  const closeAllForms = () => {
+    const cardForms = document.querySelectorAll('[data-cardForm]')
+    const cardOpenForms = document.querySelectorAll('[data-cardopenform]')
+
+    cardForms.forEach(form => {
+      form.style.display = 'none'
+    })
+
+    cardOpenForms.forEach(form => {
+      form.style.display = 'flex'
+    })
   }
 
   containerElement.addEventListener('click', e => {
@@ -175,6 +186,10 @@ export function createVkListeners() {
 
     if (target.dataset.addcard) {
       addCard(target)
+    }
+
+    if (target.dataset.container) {
+      closeAllForms()
     }
   })
 }
